@@ -153,7 +153,35 @@ button.small{min-height:34px;padding:6px 11px;font-size:13px}
   .totbar .sums{justify-content:space-between;width:100%}
   .totbar button{width:100%}
 }
-</style>
+/* --- Schede ordine: disposizione mobile esplicita --- */
+@media (max-width:759px){
+  .ord{grid-template-columns:76px 1fr 1fr;grid-template-areas:"ph info info" "pu sc pf" "qt qt tt" "act act act";gap:10px;padding:12px;align-items:stretch}
+  .ord > :nth-child(4){grid-area:pu}
+  .ord > :nth-child(5){grid-area:sc}
+  .ord > :nth-child(6){grid-area:pf}
+  .ord > :nth-child(7){grid-area:qt}
+  .ord > :nth-child(8){grid-area:tt}
+  .ord .ph{grid-area:ph}
+  .ord .info{grid-area:info}
+  .ord .info .nm{font-size:15px}
+  .ord .info .code{font-size:17px;padding:2px 8px}
+  .ord .fld{min-width:0}
+  .ord .fld > span{font-size:11px}
+  .ord .fld input{min-height:44px;font-size:16px;width:100%}
+  .ord .fld b{font-size:15px;padding-top:0}
+  .ord .step{min-height:44px}
+  .ord .step button{min-height:44px;width:48px;font-size:20px}
+  .ord .step input{min-height:44px;width:auto;flex:1;font-size:17px}
+  .ord .fld.tot{border-top:1px dashed var(--line);padding-top:8px;align-items:center}
+  .ord .fld.tot b{font-size:18px}
+  .ord .rm{grid-area:act;display:flex;justify-content:space-between;align-items:center;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+  .ord .rm .mv button{min-height:40px;min-width:44px}
+  .ord .rm > button.danger{min-height:40px;padding:8px 14px}
+  .thumb.big{width:76px;height:76px}
+  .sup-n{font-size:22px}
+  .sup-logo{width:104px;height:58px}
+  .kpis .kpi .v{font-size:17px}
+}</style>
 </head>
 <body>
 
