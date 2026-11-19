@@ -165,8 +165,6 @@ button.small{min-height:34px;padding:6px 11px;font-size:13px}
       <p>Fornitore: Tecnoswitch SRL</p>
     </div>
     <div class="ordno">
-      <label for="orderNo">Numero ordine *</label>
-      <input id="orderNo" type="text" placeholder="es. 2026-001" required>
       <label for="fattoDa" style="margin-top:8px">Ordine fatto da *</label>
       <select id="fattoDa" required>
         <option value="">Scegli...</option>
@@ -244,7 +242,7 @@ button.small{min-height:34px;padding:6px 11px;font-size:13px}
         <div><span>IVA 22%</span><b id="tIva">-</b></div>
         <div class="gr"><span>Totale</span><b id="tTot">-</b></div>
       </div>
-      <button id="gen">Genera PDF</button>
+      <button id="gen">Salva PDF</button>
     </div>
   </section>
 
@@ -399,7 +397,6 @@ function applyBranding(){
   document.getElementById('cAccent').value = state.colors.accent;
   document.querySelector('meta[name="theme-color"]').setAttribute('content', state.colors.brand);
   document.getElementById('logoBox').innerHTML = state.logo ? `<img src="${state.logo}" alt="Logo">` : '<span>FS</span>';
-  document.getElementById('orderNo').value = state.orderNo || '';
   document.getElementById('fattoDa').value = state.fattoDa || '';
 }
 document.getElementById('fattoDa').addEventListener('change', e => { state.fattoDa = e.target.value; save(); });
@@ -555,7 +552,6 @@ document.getElementById('addForm').addEventListener('submit', e => {
 });
 
 // impostazioni
-document.getElementById('orderNo').addEventListener('input', e => { state.orderNo = e.target.value; save(); });
 document.getElementById('cBrand').addEventListener('input', e => { state.colors.brand = e.target.value; applyBranding(); save(); });
 document.getElementById('cAccent').addEventListener('input', e => { state.colors.accent = e.target.value; applyBranding(); save(); });
 document.getElementById('logoFile').addEventListener('change', e => {
@@ -584,9 +580,7 @@ document.getElementById('reset').addEventListener('click', () => {
 // PDF
 document.getElementById('gen').addEventListener('click', async () => {
   if (!window.jspdf) { toast('Serve la connessione internet per il PDF'); return; }
-  const ordNoField = document.getElementById('orderNo');
   const fattoField = document.getElementById('fattoDa');
-  if (!(state.orderNo || '').trim()) { toast('Inserisci il numero d\'ordine'); ordNoField.focus(); return; }
   if (!state.fattoDa) { toast('Scegli chi ha fatto l\'ordine'); fattoField.focus(); return; }
   const { imp, iva, tot, ordered } = refresh();
   if (!ordered.length) { toast('Nessuna quantità inserita'); return; }
@@ -598,7 +592,6 @@ document.getElementById('gen').addEventListener('click', async () => {
   const dd = String(now.getDate()).padStart(2,'0'), mm = String(now.getMonth()+1).padStart(2,'0'), yyyy = now.getFullYear();
   const fmt = n => n.toFixed(2).replace('.',',');
   const cut = (s, max) => s.length > max ? s.slice(0, max-1) + '.' : s;
-  const ordNo = (state.orderNo || '').trim();
   doc.setFillColor(...BR); doc.rect(0, 0, 210, 36, 'F');
   doc.setFillColor(255,255,255); doc.roundedRect(10, 5, 46, 26, 2, 2, 'F');
   if (state.logo) {
@@ -613,7 +606,6 @@ document.getElementById('gen').addEventListener('click', async () => {
   doc.setTextColor(255,255,255);
   doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.text('FERRANTE SRL', 62, 17);
   doc.setFont('helvetica','normal'); doc.setFontSize(11); doc.text(`ORDINE DEL ${dd}/${mm}/${yyyy}`, 62, 25);
-  if (ordNo) { doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.text(`N. ${ordNo}`, 198, 17, {align:'right'}); }
   doc.setTextColor(40,40,40); doc.setFont('helvetica','normal'); doc.setFontSize(10);
   const sup = window.FORNITORE || {};
   doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(...BR);
@@ -667,7 +659,7 @@ document.getElementById('gen').addEventListener('click', async () => {
   doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(11);
   doc.text('TOTALE ORDINE', 124, y); doc.text(fmt(tot) + ' EUR', 194, y, {align:'right'});
   const safe = s => s.replace(/[\\/:*?"<>|]/g,'-');
-  const nome = safe(`ORDINE N ${ordNo}`) + '.pdf';
+  const nome = safe(Ordine  del --) + '.pdf';
   const blob = doc.output('blob');
   let dl = null;
   try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch(e){}
