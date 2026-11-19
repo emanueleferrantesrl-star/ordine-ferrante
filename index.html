@@ -773,12 +773,15 @@ async function importPdf(file){
     const daPdf = new Map();
     pdfRows.forEach(r => daPdf.set(chiave(r.code, r.price), r));
     const usate = new Set();
+    const tenuti = [];
+    let rimossi = 0;
     state.items.forEach(it => {
       const k = chiave(it.code, it.price);
       const r = daPdf.get(k);
-      if (r) { it.qty = r.qty; it.price = r.price; it.disc = r.disc; usate.add(k); }
-      else { it.qty = 0; }
+      if (r) { it.qty = r.qty; it.price = r.price; it.disc = r.disc; usate.add(k); tenuti.push(it); }
+      else { state.removed.push(it); rimossi++; }
     });
+    state.items = tenuti;
     pdfRows.forEach(r => {
       const k = chiave(r.code, r.price);
       if (usate.has(k)) return;
@@ -786,7 +789,7 @@ async function importPdf(file){
     });
     if (fatto) state.fattoDa = fatto;
     applyBranding(); renderAll(); save();
-    toast('PDF importato: ' + pdfRows.length + ' articoli riallineati');
+    toast('PDF importato: ' + pdfRows.length + ' articoli, ' + rimossi + ' tolti dall\'ordine');
   } catch (err) { toast('PDF non leggibile: ' + (err && err.message || 'errore')); }
 }
 // avvio
