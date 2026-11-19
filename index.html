@@ -287,6 +287,11 @@ button.small{min-height:34px;padding:6px 11px;font-size:13px}
         <button class="small ghost" id="logoDel">Rimuovi logo</button>
         <button class="small" id="reset">Ripristina ordine originale</button>
       </div>
+      <div class="swatches">
+        <button class="small brand" id="fileSave">Salva file ordine (.json)</button>
+        <button class="small" id="fileLoadBtn">Carica file ordine</button>
+        <input type="file" id="fileLoad" accept=".json,application/json" style="display:none">
+      </div>
       <div class="notes">
         Le modifiche si salvano automaticamente su questo dispositivo e, con la sincronizzazione attiva, sugli altri dispositivi.
         Lo sconto è quello risultante dalle fatture. Prezzo netto = prezzo − sconto.
@@ -702,6 +707,40 @@ document.getElementById('gen').addEventListener('click', async () => {
   }
   doc.save(nome);
   toast('PDF creato');
+});
+
+// --- Salva / carica il file ordine (.json), per rilavorare un ordine già fatto ---
+document.getElementById('fileSave').addEventListener('click', () => {
+  const data = { tipo: 'ordine-ferrante', fornitore: (window.FORNITORE || {}).nome || '', salvato: new Date().toISOString(), stato: state };
+  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const d = new Date();
+  a.href = url;
+  a.download = 'Ordine ' + (((window.FORNITORE || {}).nome) || 'fornitore') + ' - salvato ' + String(d.getDate()).padStart(2,'0') + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + d.getFullYear() + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast('File ordine salvato');
+});
+document.getElementById('fileLoadBtn').addEventListener('click', () => document.getElementById('fileLoad').click());
+document.getElementById('fileLoad').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(reader.result);
+      const s = data && data.tipo === 'ordine-ferrante' ? data.stato : null;
+      if (!s || !Array.isArray(s.items)) { toast('File non valido: non è un ordine salvato da questa pagina'); return; }
+      state = s;
+      state.removed = Array.isArray(state.removed) ? state.removed : [];
+      state.colors = state.colors || { brand: '#1a1a1a', accent: '#958f6b' };
+      state.nextId = Math.max(0, ...state.items.concat(state.removed).map(i => i.id || 0)) + 1;
+      applyBranding(); renderAll(); save();
+      toast('Ordine caricato: ' + state.items.length + ' articoli');
+    } catch (err) { toast('Impossibile leggere il file'); }
+    e.target.value = '';
+  };
+  reader.readAsText(f);
 });
 
 // avvio
