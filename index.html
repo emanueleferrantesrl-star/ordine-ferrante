@@ -659,7 +659,7 @@ document.getElementById('gen').addEventListener('click', async () => {
   doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(11);
   doc.text('TOTALE ORDINE', 124, y); doc.text(fmt(tot) + ' EUR', 194, y, {align:'right'});
   const safe = s => s.replace(/[\\/:*?"<>|]/g,'-');
-  const nome = safe(Ordine  del --) + '.pdf';
+  const nome = safe(`Ordine ${sup.nome || 'fornitore'} del ${dd}-${mm}-${yyyy}`) + '.pdf';
   const blob = doc.output('blob');
   let dl = null;
   try { dl = (window.claude && window.claude.use) ? await window.claude.use('downloads') : null; } catch(e){}
