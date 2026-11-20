@@ -365,7 +365,7 @@ function loadState(){
   try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && Array.isArray(s.items)) return s; } catch(e){}
   return defaultState();
 }
-let state = loadState();
+let state = defaultState(); // ogni ricaricamento riparte dall'ordine originale (quantità, prezzi, sconti)
 const CATALOGO = window.CATALOGO_TECNOSWITCH || [];
 const FOTO = window.FOTO_TECNOSWITCH || {};
 let lastHits = [];
